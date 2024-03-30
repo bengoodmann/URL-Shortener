@@ -1,5 +1,4 @@
 const sequelize = require("../config/db")
-const joi = require("joi")
 const { DataTypes } = require("sequelize")
 
 
