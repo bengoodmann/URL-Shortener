@@ -9,7 +9,7 @@ const Short = sequelize.define("Short", {
     description: { type: DataTypes.TEXT },
     clickedTimes: { type: DataTypes.INTEGER, defaultValue: 0 },
     shortened: { type: DataTypes.STRING, unique: true },
-    userId: { type: DataTypes.INTEGER, allowNull: false}
+    userId: { type: DataTypes.INTEGER}
 })
 
 Short.belongsTo(User, {foreignKey: 'userId'})

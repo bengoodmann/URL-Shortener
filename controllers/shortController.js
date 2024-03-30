@@ -32,7 +32,15 @@ const createShort = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json("An unknown error has occurred", error)
+        if (error.name === 'SequelizeForeignKeyConstraintError') {
+            return res.status(400).json({ error: "Invalid user ID provided. Check if you're logged out and log in again" });
+        } else if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ error: "Short URL already exists" });
+        } else if (error.name === 'SequelizeValidationError') {
+            return res.status(400).json({ error: "Validation error: " + error.message });
+        } else {
+            return res.status(500).json({ error: "An unknown error has occurred" });
+        }
     }
 }
 
