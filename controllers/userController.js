@@ -56,7 +56,7 @@ const loginUser = async (req, res) => {
         email: user.email
       }
     }, process.env.JWT_SECRET, { expiresIn: "31d" })
-    return res.status(200).json({ "Add the token to the bearer to log in": { token } })
+    return res.status(200).json( { token } )
   } catch (error) {
     console.log(error)
     return res.status(500).json("An unknown error has occurred", error)

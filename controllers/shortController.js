@@ -1,11 +1,62 @@
 const ShortUniqueId = require('short-unique-id')
 const Short = require("../models/shortModel");
+const { Op } = require("sequelize")
 
 const uid = new ShortUniqueId({ length: 5 });
 
-// require("dotenv").config()
+
 
 const PORT = process.env.PORT
+
+const searchByName = async (req, res) => {
+
+    try {
+        const { name } = req.query
+        const user = req.user.id
+        if (!name) {
+            return res.status(400).json({ error: "Input the name of the short URL you want to search" })
+        }
+        const result = await Short.findAll({
+            where: {
+                name: {
+                    [Op.like]: `%${name}%`
+                },
+                userId: user
+            }
+        });
+        const count = await Short.count({
+            where: {
+                name: {
+                    [Op.like]: `%${name}%`
+                },
+                userId: user
+            }
+        });
+        if (!result || result.length === 0) {
+            return res.status(404).json({ error: "No short URLs were found with the specified name" })
+        }
+        return res.status(200).json({ "data": { result }, "count": { count } })
+    } catch (error) {
+        console.error("Error fetching short URLs:", error);
+        return res.status(500).json({ error: "Failed to fetch short URLs" });
+    }
+}
+
+
+const allUserCreatedShort = async (req, res) => {
+    try {
+        const user = req.user.id;
+        const shorts = await Short.findAll({ where: { userId: user } });
+        if (!shorts) {
+            return res.status(404).json({ error: "You haven't created any short URLs" })
+        }
+        return res.status(200).json({ shorts });
+    } catch (error) {
+        console.error("Error fetching user's created short URLs:", error);
+        return res.status(500).json({ error: "Failed to fetch user's created short URLs" });
+    }
+};
+
 
 const createShort = async (req, res) => {
     try {
@@ -44,6 +95,63 @@ const createShort = async (req, res) => {
     }
 }
 
+const getShort = async (req, res) => {
+    try {
+        const userId = req.user.id
+        const shortId = req.params.id
+        const short = await Short.findOne({ where: { userId: userId, id: shortId } })
+        if (!short) {
+            return res.status(404).json({ error: "The short URL not found" })
+        }
+        return res.status(200).json({ short })
+    } catch (error) {
+        console.error("Error fetching short URL:", error);
+        return res.status(500).json({ error: "Failed to fetch short URL" });
+    }
+}
+
+const updateShort = async (req, res) => {
+    try {
+        const userId = req.user.id
+        const shortId = req.params.id
+        const { name, url, description } = req.body
+        const short = await Short.findOne({ where: { userId: userId, id: shortId } })
+        if (!short) {
+            return res.status(404).json({ error: "The short URL doesn't exist" })
+        }
+        // const updateDetails = {
+        //     name: name || short.name,
+        //     description: description || short.description
+        // }
+        // const  updatedShort = await Short.update(updateDetails, { where: { id: shortId }, returning: true });
+        short.name = name || short.name
+        short.description = description || short.description
+        short.originalURL = url || short.originalURL
+        await short.save()
+
+        return res.status(200).json({ message: "Short URL updated successfully", short })
+    } catch (error) {
+        console.error("Error updating short URL:", error);
+        return res.status(500).json({ error: "Failed to update short URL" });
+    }
+}
+
+const deleteShort = async (req, res) => {
+    try {
+        const userId = req.user.id
+        const shortId = req.params.id
+        const short = await Short.findOne({ where: { userId: userId, id: shortId } })
+        if (!short) {
+            return res.status(404).json({ error: "The short URL doesn't exist" })
+        }
+        await short.destroy()
+        return res.status(200).json({ message: "Short URL deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting short URL:", error);
+        return res.status(500).json({ error: "Failed to delete short URL" });
+    }
+}
+
 const redirectShort = async (req, res) => {
     try {
         const short = req.params.short
@@ -67,4 +175,4 @@ const isValidUrl = (url) => {
     return urlRegex.test(url);
 }
 
-module.exports = { createShort, redirectShort }
+module.exports = { allUserCreatedShort, createShort, getShort, updateShort, deleteShort, redirectShort, searchByName }
