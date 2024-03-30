@@ -16,7 +16,11 @@ const registerUser = async (req, res) => {
     if (!isPasswordFormat(password)) {
       return res.status(400).json({
         error:
-          "Wrong password format. Your password must be 8 characters long, contain at least 1 uppercase, 1 lowercase, 1 number and a special character",
+          `Wrong password format. 
+          Your password must be 8 characters long, 
+          contain at least 1 uppercase, 
+          1 lowercase, 1 number 
+          and a special character`,
       });
     }
     const user = await User.findOne({ where: { email } })

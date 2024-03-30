@@ -1,5 +1,6 @@
 const sequelize = require("../config/db")
 const { DataTypes } = require("sequelize")
+const User = require("./userModel")
 
 
 const Short = sequelize.define("Short", {
@@ -8,7 +9,8 @@ const Short = sequelize.define("Short", {
     description: { type: DataTypes.TEXT },
     clickedTimes: { type: DataTypes.INTEGER, defaultValue: 0 },
     shortened: { type: DataTypes.STRING, unique: true },
+    userId: { type: DataTypes.INTEGER, allowNull: false}
 })
 
-
+Short.belongsTo(User, {foreignKey: 'userId'})
 module.exports =  Short 

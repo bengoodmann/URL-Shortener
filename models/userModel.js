@@ -1,6 +1,6 @@
 const sequelize = require("../config/db")
 const { DataTypes } = require("sequelize")
-const Short = require("./shortModel")
+
 
 
 const User = sequelize.define("User", {
@@ -9,5 +9,5 @@ const User = sequelize.define("User", {
     password: {type: DataTypes.STRING, allowNull: false}
 })
 
-User.hasMany(Short)
+
 module.exports = User

@@ -22,6 +22,7 @@ const createShort = async (req, res) => {
             genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`
         }
         const newShort = await Short.create({
+            userId: req.user.id,
             originalURL: url,
             name: name,
             description: description,
