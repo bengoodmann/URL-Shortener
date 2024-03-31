@@ -64,6 +64,12 @@ app.use(
   })
 );
 
+
+
+app.use("/api/v1/short", require("./routes/shortRoute"));
+app.use("/api/v1/user", require("./routes/userRoute"));
+app.get("/:short", redirectShort);
+
 app.use((req, res, next) => {
   res.status(404).json({ message: "Not Found" });
 });
@@ -72,10 +78,6 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Internal Server Error" });
 });
-
-app.use("/api/v1/short", require("./routes/shortRoute"));
-app.use("/api/v1/user", require("./routes/userRoute"));
-app.get("/:short", redirectShort);
 
 DATABASE.sync().then(() => {
   app.listen(PORT, () => {
