@@ -76,7 +76,7 @@ const createShort = async (req, res) => {
     // let genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
 
     //in production
-    let genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
+    let genShort = `${req.protocol}://${req.hostname}/${uid.rnd()}`;
     const findShort = await Short.findOne({ where: { shortened: genShort } });
     if (findShort) {
       genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;

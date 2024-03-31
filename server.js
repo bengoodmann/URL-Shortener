@@ -3,13 +3,18 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { default: helmet } = require("helmet");
 require("dotenv").config();
+const morgan = require("morgan")
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
+const fs = require("fs")
+const path = require("path")
 
 const DATABASE = require("./config/db");
 const { redirectShort } = require("./controllers/shortController");
 
 const PORT = process.env.PORT;
+
+const accessLog = fs.createWriteStream(path.join(__dirname, "access.log"), {flags: "a"})
 
 const app = express();
 
@@ -17,6 +22,8 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan("combined"))
+app.use(morgan("combined", {stream: accessLog}))
 
 const options = {
   definition: {
