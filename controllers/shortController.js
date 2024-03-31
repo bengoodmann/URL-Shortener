@@ -4,9 +4,6 @@ const { Op } = require("sequelize");
 
 const uid = new ShortUniqueId({ length: 5 });
 
-const PORT = process.env.PORT;
-
-
 const searchByName = async (req, res) => {
   try {
     const { name } = req.query;
@@ -44,7 +41,6 @@ const searchByName = async (req, res) => {
   }
 };
 
-
 const allUserCreatedShort = async (req, res) => {
   try {
     const user = req.user.id;
@@ -63,7 +59,6 @@ const allUserCreatedShort = async (req, res) => {
   }
 };
 
-
 const createShort = async (req, res) => {
   try {
     const { originalURL, name, description } = req.body;
@@ -77,6 +72,10 @@ const createShort = async (req, res) => {
         error: "Invalid URL format, please enter a valid website address",
       });
     }
+    //in development
+    // let genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
+
+    //in production
     let genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
     const findShort = await Short.findOne({ where: { shortened: genShort } });
     if (findShort) {
@@ -109,7 +108,6 @@ const createShort = async (req, res) => {
   }
 };
 
-
 const getShort = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -126,7 +124,6 @@ const getShort = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch short URL" });
   }
 };
-
 
 const updateShort = async (req, res) => {
   try {
@@ -157,8 +154,6 @@ const updateShort = async (req, res) => {
     return res.status(500).json({ error: "Failed to update short URL" });
   }
 };
-
-
 
 const deleteShort = async (req, res) => {
   try {

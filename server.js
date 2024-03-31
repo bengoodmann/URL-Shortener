@@ -31,6 +31,9 @@ const options = {
       {
         url: "http://localhost:3000",
       },
+      {
+        url: "https://short-n9a0.onrender.com",
+      },
     ],
     components: {
       securitySchemes: {
@@ -60,6 +63,15 @@ app.use(
       "https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.0/themes/3.x/theme-newspaper.css",
   })
 );
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Not Found" });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal Server Error" });
+});
 
 app.use("/api/v1/short", require("./routes/shortRoute"));
 app.use("/api/v1/user", require("./routes/userRoute"));
