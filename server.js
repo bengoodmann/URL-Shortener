@@ -29,9 +29,6 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
-      },
-      {
         url: "https://short-n9a0.onrender.com",
       },
     ],
