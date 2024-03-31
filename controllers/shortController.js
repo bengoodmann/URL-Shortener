@@ -198,7 +198,7 @@ const deleteShort = async (req, res) => {
 const redirectShort = async (req, res) => {
   try {
     const short = req.params.short;
-    const _ = `${req.protocol}://${req.hostname}:${PORT}/${short}`;
+    const _ = `${req.protocol}://${req.hostname}/${short}`;
     const findShort = await Short.findOne({ where: { shortened: _ } });
     if (!findShort) {
       return res.status(404).json({ error: "The link doesn't exist" });
