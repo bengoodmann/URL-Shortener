@@ -83,7 +83,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-DATABASE.sync().then(() => {
+DATABASE.sync({alter: true}).then(() => {
   app.listen(PORT, () => {
     console.log(`Server has started running at port http://localhost:${PORT}`);
   });
