@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { createShort, allUserCreatedShort, getShort, updateShort, deleteShort, searchByName } = require("../controllers/shortController")
+const { createShort, allUserCreatedShort, getShortById, updateShort, deleteShort, searchByName, getShortById } = require("../controllers/shortController")
 const authenticate = require("../middlewares/tokenValidation")
 const router = Router()
 
@@ -48,6 +48,9 @@ router.use(authenticate)
  *                  originalURL:
  *                      type: string
  *                      description: The original link to be shortened
+ *                  customizedLink:
+ *                      type: string
+ *                      description: Input your preferred link to customize
  *                  description:
  *                      type: string
  *                      description: This describes the original link.
@@ -191,7 +194,7 @@ router.post("/",createShort)
  *       '500':
  *         description: Internal server error
  */
-router.get("/:id", getShort)
+router.get("/:id", getShortById)
 
 
 /**

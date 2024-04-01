@@ -46,7 +46,7 @@ const searchByName = async (req, res) => {
 const allUserCreatedShort = async (req, res) => {
   try {
     const user = req.user.id;
-    const shorts = await Short.findAll({ where: { userId: user } });
+  const shorts = await Short.findAll({include: user});
     if (!shorts) {
       return res
         .status(404)
@@ -63,7 +63,7 @@ const allUserCreatedShort = async (req, res) => {
 
 const createShort = async (req, res) => {
   try {
-    const { originalURL, name, description } = req.body;
+    const { originalURL, name, customizedLink, description } = req.body;
     if (!(originalURL && name)) {
       return res
         .status(400)
@@ -75,17 +75,27 @@ const createShort = async (req, res) => {
       });
     }
     //in development
-
+    let genShort;
     if (req.hostname === "localhost" || req.hostname === "127.0.0.1") {
-      const genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
+      if (customizedLink) {
+        genShort = `${req.protocol}://${req.hostname}:${PORT}/to.${customizedLink}`;
+      } else {
+        genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
+      }
     } else {
       //in production
-      const genShort = `${req.protocol}://${req.hostname}/${uid.rnd()}`;
+      if (customizedLink) {
+        genShort = `${req.protocol}://${req.hostname}/to.${customizedLink}`;
+      } else {
+        genShort = `${req.protocol}://${req.hostname}/${uid.rnd()}`;
+      }
     }
-  
+
     const findShort = await Short.findOne({ where: { shortened: genShort } });
-    if (findShort) {
+    if (findShort && !customizedLink) {
       genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
+    } else if(findShort && customizedLink){
+      return res.status(400).json("The custom link exists.Please, choose another one!")
     }
     const newShort = await Short.create({
       userId: req.user.id,
@@ -114,7 +124,7 @@ const createShort = async (req, res) => {
   }
 };
 
-const getShort = async (req, res) => {
+const getShortById = async (req, res) => {
   try {
     const userId = req.user.id;
     const shortId = req.params.id;
@@ -200,12 +210,14 @@ const deleteShort = async (req, res) => {
 const redirectShort = async (req, res) => {
   try {
     const short = req.params.short;
+
+    let _;
     // in dev
     if (req.hostname === "localhost" || req.hostname === "127.0.0.1") {
-      const _ = `${req.protocol}://${req.hostname}:${PORT}/${short}`;
+      _ = `${req.protocol}://${req.hostname}:${PORT}/${short}`;
     } else {
       // in prod
-      const _ = `${req.protocol}://${req.hostname}/${short}`;
+      _ = `${req.protocol}://${req.hostname}/${short}`;
     }
 
     const findShort = await Short.findOne({ where: { shortened: _ } });
@@ -230,7 +242,7 @@ const isValidUrl = (url) => {
 module.exports = {
   allUserCreatedShort,
   createShort,
-  getShort,
+  getShortById,
   updateShort,
   deleteShort,
   redirectShort,
