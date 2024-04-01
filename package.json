@@ -21,6 +21,7 @@
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "pg": "^8.11.4",
     "sequelize": "^6.37.1",
     "sequelize-cli": "^6.6.2",
     "short-unique-id": "^5.0.3",

@@ -4,6 +4,8 @@ const { Op } = require("sequelize");
 
 const uid = new ShortUniqueId({ length: 5 });
 
+const PORT = process.env.PORT;
+
 const searchByName = async (req, res) => {
   try {
     const { name } = req.query;
@@ -73,10 +75,14 @@ const createShort = async (req, res) => {
       });
     }
     //in development
-    // let genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
 
-    //in production
-    let genShort = `${req.protocol}://${req.hostname}/${uid.rnd()}`;
+    if (req.hostname === "localhost" || req.hostname === "127.0.0.1") {
+      const genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
+    } else {
+      //in production
+      const genShort = `${req.protocol}://${req.hostname}/${uid.rnd()}`;
+    }
+  
     const findShort = await Short.findOne({ where: { shortened: genShort } });
     if (findShort) {
       genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
@@ -136,11 +142,7 @@ const updateShort = async (req, res) => {
     if (!short) {
       return res.status(404).json({ error: "The short URL doesn't exist" });
     }
-    // const updateDetails = {
-    //     name: name || short.name,
-    //     description: description || short.description
-    // }
-    // const  updatedShort = await Short.update(updateDetails, { where: { id: shortId }, returning: true });
+
     short.name = name || short.name;
     short.description = description || short.description;
     short.originalURL = originalURL || short.originalURL;
@@ -198,13 +200,21 @@ const deleteShort = async (req, res) => {
 const redirectShort = async (req, res) => {
   try {
     const short = req.params.short;
-    const _ = `${req.protocol}://${req.hostname}/${short}`;
+    // in dev
+    if (req.hostname === "localhost" || req.hostname === "127.0.0.1") {
+      const _ = `${req.protocol}://${req.hostname}:${PORT}/${short}`;
+    } else {
+      // in prod
+      const _ = `${req.protocol}://${req.hostname}/${short}`;
+    }
+
     const findShort = await Short.findOne({ where: { shortened: _ } });
     if (!findShort) {
       return res.status(404).json({ error: "The link doesn't exist" });
     }
 
-    findShort.increment("clickedTimes");
+    await findShort.increment("clickedTimes");
+    await findShort.save();
     return res.redirect(findShort.originalURL);
   } catch (error) {
     console.log(error);

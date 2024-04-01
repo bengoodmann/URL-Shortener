@@ -1,10 +1,16 @@
 const Sequelize = require("sequelize")
 const path = require("path")
-
+process.env.DATABASE_URL
 const DATABASE = new Sequelize({
-    dialect: 'sqlite',
-    storage: path.join(__dirname, 'db.sqlite3'),
-    logging: console.log,
+  dialect: "sqlite",
+  storage: path.join(__dirname, 'db.sqlite3'),
+  logging: console.log,
+//   dialectOptions: {
+//     ssl: {
+//       require: true,
+//       rejectUnauthorized: false, 
+//     },
+//   },
 });
 
 (async () => {
