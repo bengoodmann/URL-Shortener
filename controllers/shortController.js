@@ -49,13 +49,13 @@ const searchByName = async (req, res) => {
 const allUserCreatedShort = async (req, res) => {
   try {
     const user = req.user.id;
-  const shorts = await Short.findAll({where:{userId: user}});
+    const shorts = await Short.findAll({ where: { userId: user } });
     if (!shorts) {
       return res
         .status(404)
         .json({ error: "You haven't created any short URLs" });
     }
-    return res.status(200).json( shorts );
+    return res.status(200).json(shorts);
   } catch (error) {
     console.error("Error fetching user's created short URLs:", error);
     return res
@@ -77,18 +77,25 @@ const createShort = async (req, res) => {
         error: "Invalid URL format, please enter a valid website address",
       });
     }
+    if (customizedLink && customizedLink.length > 10) {
+      return res.status(400).json({
+        error:
+          "Customized link length shouldn't be longer than 10 and avoid whitespace",
+      });
+    }
+    const trimmed = customizedLink.trim().replace(/\s+/g, "");
     //in development
     let genShort;
     if (req.hostname === "localhost" || req.hostname === "127.0.0.1") {
       if (customizedLink) {
-        genShort = `${req.protocol}://${req.hostname}:${PORT}/to.${customizedLink}`;
+        genShort = `${req.protocol}://${req.hostname}:${PORT}/to.${trimmed}`;
       } else {
         genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
       }
     } else {
       //in production
       if (customizedLink) {
-        genShort = `${req.protocol}://${req.hostname}/to.${customizedLink}`;
+        genShort = `${req.protocol}://${req.hostname}/to.${trimmed}`;
       } else {
         genShort = `${req.protocol}://${req.hostname}/${uid.rnd()}`;
       }
@@ -107,7 +114,6 @@ const createShort = async (req, res) => {
       originalURL: originalURL,
       name: name,
       description: description,
-      // qrcode: ,
       shortened: genShort,
     });
     return res.status(201).json({ data: { newShort } });

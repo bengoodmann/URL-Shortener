@@ -28,6 +28,9 @@ router.use(authenticate)
  *                  description:
  *                      type: string
  *                      description: This describes the original link.
+ *                  customizedLink:
+ *                      type: string
+ *                      description: Provide a customized link
  *                  clickedTimes:
  *                      type: integer
  *                      description: Calculates the total time the shortened link was clicked
