@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { createShort, allUserCreatedShort, getShortById, updateShort, deleteShort, searchByName, getShortById } = require("../controllers/shortController")
+const { createShort, allUserCreatedShort, getShortById, updateShort, deleteShort, searchByName,  downloadQRCode } = require("../controllers/shortController")
 const authenticate = require("../middlewares/tokenValidation")
 const router = Router()
 
@@ -293,6 +293,8 @@ router.patch("/:id",updateShort)
  *         description: Internal server error
  */
 router.delete("/:id",deleteShort)
+
+router.get("/:id/download", downloadQRCode)
 
 
 
