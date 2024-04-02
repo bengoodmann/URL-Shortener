@@ -8,6 +8,7 @@ const Short = sequelize.define("Short", {
   description: { type: DataTypes.TEXT },
   clickedTimes: { type: DataTypes.INTEGER, defaultValue: 0 },
   shortened: { type: DataTypes.STRING, unique: true, maxlength: 10 },
+//   qrcode : {type: DataTypes.STRING, allowNull: false},
   userId: { type: DataTypes.INTEGER },
 });
 

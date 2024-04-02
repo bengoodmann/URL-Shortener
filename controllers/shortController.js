@@ -1,6 +1,9 @@
 const ShortUniqueId = require("short-unique-id");
 const Short = require("../models/shortModel");
 const { Op } = require("sequelize");
+const qr = require("qr-image");
+const fs = require("fs");
+const path = require("path");
 
 const uid = new ShortUniqueId({ length: 5 });
 
@@ -46,13 +49,13 @@ const searchByName = async (req, res) => {
 const allUserCreatedShort = async (req, res) => {
   try {
     const user = req.user.id;
-  const shorts = await Short.findAll({include: user});
+  const shorts = await Short.findAll({where:{userId: user}});
     if (!shorts) {
       return res
         .status(404)
         .json({ error: "You haven't created any short URLs" });
     }
-    return res.status(200).json({ shorts });
+    return res.status(200).json( shorts );
   } catch (error) {
     console.error("Error fetching user's created short URLs:", error);
     return res
@@ -94,14 +97,17 @@ const createShort = async (req, res) => {
     const findShort = await Short.findOne({ where: { shortened: genShort } });
     if (findShort && !customizedLink) {
       genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
-    } else if(findShort && customizedLink){
-      return res.status(400).json("The custom link exists.Please, choose another one!")
+    } else if (findShort && customizedLink) {
+      return res
+        .status(400)
+        .json("The custom link exists.Please, choose another one!");
     }
     const newShort = await Short.create({
       userId: req.user.id,
       originalURL: originalURL,
       name: name,
       description: description,
+      // qrcode: ,
       shortened: genShort,
     });
     return res.status(201).json({ data: { newShort } });
@@ -185,6 +191,33 @@ const deleteShort = async (req, res) => {
   }
 };
 
+const downloadQRCode = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const shortId = req.params.id;
+    const short = await Short.findOne({
+      where: { userId: userId, id: shortId },
+    });
+    if (!short) {
+      return res.status(404).json({ error: "The short URL doesn't exist" });
+    }
+    const link = short.shortened;
+    const qrcode = qr.image(link, { type: "png" });
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${short.name}.png"`
+    );
+    res.setHeader("Content-Type", "image/png");
+    qrcode.pipe(res);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      error: "Error occurred while downloading the qrcode",
+    });
+  }
+};
+
 /**
  * @swagger
  * /api/{short}:
@@ -247,4 +280,5 @@ module.exports = {
   deleteShort,
   redirectShort,
   searchByName,
+  downloadQRCode,
 };

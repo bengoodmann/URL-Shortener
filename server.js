@@ -3,18 +3,20 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { default: helmet } = require("helmet");
 require("dotenv").config();
-const morgan = require("morgan")
+const morgan = require("morgan");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
-const fs = require("fs")
-const path = require("path")
+const fs = require("fs");
+const path = require("path");
 
 const DATABASE = require("./config/db");
 const { redirectShort } = require("./controllers/shortController");
 
 const PORT = process.env.PORT;
 
-const accessLog = fs.createWriteStream(path.join(__dirname, "access.log"), {flags: "a"})
+const accessLog = fs.createWriteStream(path.join(__dirname, "access.log"), {
+  flags: "a",
+});
 
 const app = express();
 
@@ -22,8 +24,8 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(morgan("combined"))
-app.use(morgan("combined", {stream: accessLog}))
+app.use(morgan("combined"));
+app.use(morgan("combined", { stream: accessLog }));
 
 const options = {
   definition: {
@@ -68,8 +70,6 @@ app.use(
   })
 );
 
-
-
 app.use("/api/v1/short", require("./routes/shortRoute"));
 app.use("/api/v1/user", require("./routes/userRoute"));
 app.get("/:short", redirectShort);
@@ -83,8 +83,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-DATABASE.sync({alter: true}).then(() => {
+DATABASE
+.sync()
+.then(() => {
   app.listen(PORT, () => {
-    console.log(`Server has started running at port http://localhost:${PORT}`);
+    console.log(`Server has started running at port :${PORT}`);
   });
 });
