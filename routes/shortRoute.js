@@ -168,6 +168,35 @@ router.get("/", allUserCreatedShort)
  */
 router.post("/",createShort)
 
+
+/**
+ * @swagger
+ * /api/v1/short/{id}/download:
+ *   get:
+ *     summary: Generates a QR code from the shortened URL for download.
+ *     tags: [Shorts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the short URL to generate QR code for.
+ *     responses:
+ *       '200':
+ *         description: Image of the QR code
+ *         content:
+ *           image/png:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       '404':
+ *         description: Short URL not found
+ *       '500':
+ *         description: Internal server error
+ */
+router.get("/:id/download", downloadQRCode)
+
 /**
  * @swagger
  * /api/v1/short/{id}:
@@ -294,7 +323,8 @@ router.patch("/:id",updateShort)
  */
 router.delete("/:id",deleteShort)
 
-router.get("/:id/download", downloadQRCode)
+
+
 
 
 
