@@ -38,7 +38,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://short-n9a0.onrender.com",
+        url: "https://url-shortener-fr6k.onrender.com",
       },
     ],
     components: {
