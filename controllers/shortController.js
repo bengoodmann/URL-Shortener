@@ -83,7 +83,7 @@ const createShort = async (req, res) => {
           "Customized link length shouldn't be longer than 10 and avoid whitespace",
       });
     }
-    const trimmed = customizedLink.trim().replace(/\s+/g, "");
+    const trimmed = customizedLink.replace(/\s+/g, "");
     //in development
     let genShort;
     if (req.hostname === "localhost" || req.hostname === "127.0.0.1") {
