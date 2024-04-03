@@ -4,7 +4,7 @@ The API allows authenticated users to :
 - View how many times the link was accessed
 - Generate a QR code
 
-The link to the [documentation](https://url-shortener-fr6k.onrender.com/api/v1/docs").
+The link to the [documentation](https://url-shortener-fr6k.onrender.com/api/v1/docs).
 
 The documentation is well detailed. For any inquirer don't fail to [contact](mailto:bensonisonline@gmail.com) me
 
