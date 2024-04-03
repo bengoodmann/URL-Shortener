@@ -83,19 +83,19 @@ const createShort = async (req, res) => {
           "Customized link length shouldn't be longer than 10 and avoid whitespace",
       });
     }
-    const trimmed = customizedLink.replace(/\s+/g, "");
+    const sanitizedCustomizedLink = customizedLink.replace(/\s+/g, "");
     //in development
     let genShort;
     if (req.hostname === "localhost" || req.hostname === "127.0.0.1") {
       if (customizedLink) {
-        genShort = `${req.protocol}://${req.hostname}:${PORT}/to.${trimmed}`;
+        genShort = `${req.protocol}://${req.hostname}:${PORT}/to.${sanitizedCustomizedLink}`;
       } else {
         genShort = `${req.protocol}://${req.hostname}:${PORT}/${uid.rnd()}`;
       }
     } else {
       //in production
       if (customizedLink) {
-        genShort = `${req.protocol}://${req.hostname}/to.${trimmed}`;
+        genShort = `${req.protocol}://${req.hostname}/to.${sanitizedCustomizedLink}`;
       } else {
         genShort = `${req.protocol}://${req.hostname}/${uid.rnd()}`;
       }
