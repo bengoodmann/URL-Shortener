@@ -77,13 +77,18 @@ const createShort = async (req, res) => {
         error: "Invalid URL format, please enter a valid website address",
       });
     }
-    if (customizedLink && customizedLink.length > 10) {
+    let sanitizedCustomizedLink
+    if (customizedLink) {
+      sanitizedCustomizedLink = customizedLink.replace(/\s+/g, "");
+      if(customizedLink.length > 15){
       return res.status(400).json({
         error:
           "Customized link length shouldn't be longer than 10 and avoid whitespace",
       });
+      }
+
     }
-    const sanitizedCustomizedLink = customizedLink.replace(/\s+/g, "");
+    
     //in development
     let genShort;
     if (req.hostname === "localhost" || req.hostname === "127.0.0.1") {
