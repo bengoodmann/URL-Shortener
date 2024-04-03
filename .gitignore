@@ -127,3 +127,4 @@ dist
 .pnp.*
 
 # database
+config/*.sqlite3
